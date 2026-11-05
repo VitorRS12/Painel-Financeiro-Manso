@@ -7,17 +7,16 @@ value = "development"
 # 1. Configurações do Hasura GraphQL Engine
 # -----------------------------------------------------------------------------
 [hasura]
-version = "v2.48.0-ce" # Substitua pela versão correspondente do seu projeto
+version = "v2.48.10-ce"
 adminSecret = "{{ secrets.HASURA_GRAPHQL_ADMIN_SECRET }}"
 webhookSecret = "{{ secrets.NHOST_WEBHOOK_SECRET }}"
 
 [hasura.settings]
 corsDomain = [ "*" ]
-devMode = true
+devMode = false
 enableAllowList = false
 enableConsole = true
-enableRemoteSchemaPermissions = false
-enabledAPIs = [ "metadata", "graphql", "pgdump", "config" ]
+enabledAPIs = [ "metadata", "graphql", "config" ]
 inferFunctionPermissions = true
 liveQueriesMultiplexedRefetchInterval = 1_000
 stringifyNumericTypes = false
@@ -38,18 +37,25 @@ httpPoolSize = 10
 # 2. Configurações de Autenticação (Auth)
 # -----------------------------------------------------------------------------
 [auth]
-redirectionUrl = "http://localhost:3000"
+version = "0.52.0"
 
-[auth.redirectionUrls]
-allowed = ["http://localhost:3000/*", "https://meuapp.com*"]
+[auth.elevatedPrivileges]
+mode = "disabled"
 
-[auth.token]
-# Tempo de expiração do JWT (em segundos)
-expiresIn = 900 # 15 minutos
+[auth.redirections]
+allowedUrls = [ ]
+clientUrl = "http://localhost:3000"
 
-[auth.session.roles]
+[auth.session.accessToken]
+customClaims = [ ]
+expiresIn = 900
+
+[auth.session.refreshToken]
+expiresIn = 2_592_000
+
+[auth.user.roles]
+allowed = [ "user", "me" ]
 default = "user"
-allowed = ["user", "meu-cargo-customizado"]
 
 # Métodos de login aceitos
 [auth.method.emailPassword]
@@ -66,8 +72,6 @@ enabled = false
 # Exemplo de configuração OAuth (Google)
 [auth.method.oauth.google]
 enabled = false
-clientId = "{{ secrets.GOOGLE_CLIENT_ID }}"
-clientSecret = "{{ secrets.GOOGLE_CLIENT_SECRET }}"
 
 # -----------------------------------------------------------------------------
 # 3. Configurações de Armazenamento (Storage)
