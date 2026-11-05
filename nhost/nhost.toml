@@ -1,0 +1,82 @@
+# Configurações Globais e Variáveis de Ambiente
+[[global.environment]]
+name = "APP_ENV"
+value = "development"
+
+# -----------------------------------------------------------------------------
+# 1. Configurações do Hasura GraphQL Engine
+# -----------------------------------------------------------------------------
+[hasura]
+version = "v2.48.0-ce" # Substitua pela versão correspondente do seu projeto
+adminSecret = "{{ secrets.HASURA_GRAPHQL_ADMIN_SECRET }}"
+webhookSecret = "{{ secrets.NHOST_WEBHOOK_SECRET }}"
+
+[hasura.settings]
+corsDomain = [ "*" ]
+devMode = true
+enableAllowList = false
+enableConsole = true
+enableRemoteSchemaPermissions = false
+enabledAPIs = [ "metadata", "graphql", "pgdump", "config" ]
+inferFunctionPermissions = true
+liveQueriesMultiplexedRefetchInterval = 1_000
+stringifyNumericTypes = false
+
+[[hasura.jwtSecrets]]
+key = "{{ secrets.NHOST_JWT_PUBLIC_KEY }}"
+kid = "{{ secrets.NHOST_JWT_KID }}"
+signingKey = "{{ secrets.NHOST_JWT_PRIVATE_KEY }}"
+type = "RS256"
+
+[hasura.logs]
+level = "warn"
+
+[hasura.events]
+httpPoolSize = 10
+
+# -----------------------------------------------------------------------------
+# 2. Configurações de Autenticação (Auth)
+# -----------------------------------------------------------------------------
+[auth]
+redirectionUrl = "http://localhost:3000"
+
+[auth.redirectionUrls]
+allowed = ["http://localhost:3000/*", "https://meuapp.com*"]
+
+[auth.token]
+# Tempo de expiração do JWT (em segundos)
+expiresIn = 900 # 15 minutos
+
+[auth.session.roles]
+default = "user"
+allowed = ["user", "meu-cargo-customizado"]
+
+# Métodos de login aceitos
+[auth.method.emailPassword]
+emailVerificationRequired = true
+hibpEnabled = false
+passwordMinLength = 9
+
+[auth.method.anonymous]
+enabled = false
+
+[auth.method.oauth.apple]
+enabled = false
+
+# Exemplo de configuração OAuth (Google)
+[auth.method.oauth.google]
+enabled = false
+clientId = "{{ secrets.GOOGLE_CLIENT_ID }}"
+clientSecret = "{{ secrets.GOOGLE_CLIENT_SECRET }}"
+
+# -----------------------------------------------------------------------------
+# 3. Configurações de Armazenamento (Storage)
+# -----------------------------------------------------------------------------
+[storage]
+# Limite máximo de upload de arquivo por requisição (em bytes)
+# Exemplo: 52428800 bytes = 50 MB
+maxFileSize = 52428800
+
+# Antivirus integrado (opcional, consome mais recursos localmente se ativado)
+[storage.antivirus]
+enabled = false
