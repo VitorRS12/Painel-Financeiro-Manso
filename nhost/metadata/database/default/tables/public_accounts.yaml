@@ -1,0 +1,31 @@
+table:
+  name: accounts
+  schema: public
+# Sem delete: contas são arquivadas (is_archived), nunca excluídas.
+select_permissions:
+  - role: user
+    permission:
+      columns: [id, user_id, name, type, initial_balance_cents, closing_day, due_day, color, is_archived, created_at, updated_at]
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+insert_permissions:
+  - role: user
+    permission:
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
+      set:
+        user_id: x-hasura-User-Id
+      columns: [name, type, initial_balance_cents, closing_day, due_day, color, is_archived]
+update_permissions:
+  - role: user
+    permission:
+      # type fica fora: trocar o tipo de uma conta com histórico quebraria as regras de cartão e fatura.
+      columns: [name, initial_balance_cents, closing_day, due_day, color, is_archived]
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id

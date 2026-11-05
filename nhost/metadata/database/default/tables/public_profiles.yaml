@@ -1,0 +1,22 @@
+table:
+  name: profiles
+  schema: public
+# Sem insert: o perfil é criado no cadastro (item 4 do plano), não pelo cliente.
+# Sem delete: o perfil só some junto com o usuário (ON DELETE CASCADE).
+select_permissions:
+  - role: user
+    permission:
+      columns: [user_id, display_name, currency, theme, created_at, updated_at]
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+update_permissions:
+  - role: user
+    permission:
+      columns: [display_name, theme]
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id

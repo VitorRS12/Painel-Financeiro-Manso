@@ -1,0 +1,31 @@
+table:
+  name: categories
+  schema: public
+# Sem delete: categorias são arquivadas (is_archived), nunca excluídas.
+select_permissions:
+  - role: user
+    permission:
+      columns: [id, user_id, name, type, parent_id, color, icon, is_archived, created_at, updated_at]
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+insert_permissions:
+  - role: user
+    permission:
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
+      set:
+        user_id: x-hasura-User-Id
+      columns: [name, type, parent_id, color, icon, is_archived]
+update_permissions:
+  - role: user
+    permission:
+      # type fica fora: o tipo da categoria precisa continuar igual ao dos lançamentos que a usam.
+      columns: [name, parent_id, color, icon, is_archived]
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
